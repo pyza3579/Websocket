@@ -5,6 +5,12 @@ const addMessageForm = document.getElementById('add-messages-form');
 const userNameInput = document.getElementById('username');
 const messageContentInput = document.getElementById('message-content');
 
+const socket = io();
+
+socket.on('message', ({ author, content }) => addMessage(author, content))
+socket.on('newUser', userName => addMessage('Chat Bot', userName + ' has joined the conversation!')),
+socket.on('removeUser', userName => addMessage('Chat Bot', userName + ' has left the conversation... :( '));
+
 let userName = '';
 
 loginForm.addEventListener('submit', (event) => {
@@ -14,12 +20,13 @@ loginForm.addEventListener('submit', (event) => {
 
 const login = event => {
   if(userNameInput.value === '') {
-    alert('You wrote no text')
+    alert('Write something first')
   } else {
-    userName=userNameInput.value;
+    userName = userNameInput.value;
     loginForm.classList.remove('show');
     messagesSection.classList.add('show');
   }
+  socket.emit('join', userName);
 };
 
 addMessageForm.addEventListener('submit',(event) => {
@@ -27,14 +34,33 @@ addMessageForm.addEventListener('submit',(event) => {
   event.preventDefault();
 });
 
-const sendMessage = event => {
-    if(messageContentInput.value === '') {
-    alert('You wrote no text')
+function sendMessage (event){
+  event.preventDefault();
+
+  if(messageContentInput.value === '') {
+      alert('You have fill the field!')
   } else {
-    addMessage(userName, messageContentInput.value)
-  }
-  messageContentInput.value = '';
+      addMessage(userName, messageContentInput.value);
+      socket.emit('message', { author: userName, content: messageContentInput.value })
+
+      messageContentInput.value = '';
+  } 
+  
 }
+
+/*const sendMessage = event => { //po podlaczeniu soketow, co tu sie dzieje?
+
+    let messageContent = messageContentInput.value;
+
+    if(!messageContent.lenght) {
+    alert('Write something first')
+  } else {
+    addMessage(userName, messageContent);
+    socket.emit('message', { author: userName, content: messageContent })
+    messageContentInput.value = '';
+  }
+  
+}*/
 
 const addMessage = (author, content) => {
   const message = document.createElement('li'); 
@@ -50,3 +76,5 @@ const addMessage = (author, content) => {
   `;
   messagesList.appendChild(message);
 };
+
+
