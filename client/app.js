@@ -9,7 +9,7 @@ const socket = io();
 
 socket.on('message', ({ author, content }) => addMessage(author, content))
 socket.on('newUser', userName => addMessage('Chat Bot', userName + ' has joined the conversation!')),
-socket.on('removeUser', userName => addMessage('Chat Bot', userName + ' has left the conversation... :( '));
+socket.on('removeUser', userName => addMessage('Chat Bot', userName + ' has left the conversation... :( ')); //to nie dziala :(
 
 let userName = '';
 
@@ -48,7 +48,7 @@ function sendMessage (event){
   
 }
 
-/*const sendMessage = event => { //po podlaczeniu soketow, co tu sie dzieje?
+/*const sendMessage = event => { //po podlaczeniu socketow, co tu sie dzieje?
 
     let messageContent = messageContentInput.value;
 
@@ -67,7 +67,7 @@ const addMessage = (author, content) => {
   message.classList.add('message');
   message.classList.add('message--received');
   if (author === userName)message.classList.add('message--self');
-
+  if(author === 'Chat Bot') message.classList.add('chat--bot');
   message.innerHTML = `
     <h3 class="message__author">${userName === author ? 'You' : author }</h3>
     <div class="message__content">
